@@ -1,0 +1,11 @@
+# Google Colab already has all of these (the notebook does not install or pin TensorFlow).
+numpy
+opencv-python-headless
+matplotlib
+pandas
+tqdm
+nbformat
+# only for running the notebook outside Colab
+tensorflow
+nbconvert
+ipykernel

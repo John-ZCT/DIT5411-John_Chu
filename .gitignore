@@ -1,0 +1,14 @@
+data/
+work/
+_local_drive/
+*.npy
+*.npz
+*.zip*
+*.h5
+*.keras
+notebooks/_test_runs/
+results/subset*/
+notebooks/results/
+__pycache__/
+.ipynb_checkpoints/
+.venv*/
