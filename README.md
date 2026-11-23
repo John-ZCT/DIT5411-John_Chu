@@ -4,7 +4,7 @@ Recognising 13,065 handwritten Traditional Chinese characters with TensorFlow/Ke
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/John-ZCT/DIT5411-John_Chu/blob/main/notebooks/DIT5411_Colab.ipynb)
 
-Everything is in one self-contained notebook, [`notebooks/DIT5411_Colab.ipynb`](notebooks/DIT5411_Colab.ipynb). It downloads the dataset, preprocesses it, augments the training set, trains the models and writes the results in `results/`.
+Everything is in one self-contained notebook, [`notebooks/DIT5411_Colab.ipynb`](notebooks/DIT5411_Colab.ipynb). It downloads the dataset, preprocesses it, augments the training set, trains the models and writes the results in `results/`. The run that produced the results below is saved with all its outputs in [`notebooks/DIT5411_Colab_executed.ipynb`](notebooks/DIT5411_Colab_executed.ipynb).
 
 ## Contents
 1. [Dataset](#1-dataset)
@@ -98,7 +98,7 @@ Full layer tables: [`results/mlp_summary.txt`](results/mlp_summary.txt), [`resul
 ## 5. Results
 
 <!-- RESULTS_START -->
-All numbers come from one Google Colab run on a Tesla T4 GPU, with all 13,065 classes, 3,135,600 training images and 162,550 test images ([`results/summary.md`](results/summary.md), [`results/metrics_*.json`](results/)).
+All numbers come from one Google Colab run on a Tesla T4 GPU, with all 13,065 classes, 3,135,600 training images and 162,550 test images ([`results/summary.md`](results/summary.md), [`results/metrics_*.json`](results/)). The executed notebook with all outputs is [`notebooks/DIT5411_Colab_executed.ipynb`](notebooks/DIT5411_Colab_executed.ipynb). Its last cell shows a `NameError`: the cell had already run once and saved `results_32px.zip` to Google Drive, but the free Colab GPU quota then ran out, and running that cell again on the reset runtime (where all variables were gone) produced the error. The results here come from that saved zip.
 
 | Model | Parameters | Epochs run (best) | Training time (T4) | Test top-1 | Test top-5 |
 |---|---:|---:|---:|---:|---:|
@@ -172,7 +172,8 @@ DIT5411-John_Chu/
 ├── requirements.txt          # packages (all already installed on Colab)
 ├── notebooks/
 │   ├── build_notebook.py     # writes DIT5411_Colab.ipynb with nbformat
-│   └── DIT5411_Colab.ipynb   # the whole project: data, augmentation, models, training, results
+│   ├── DIT5411_Colab.ipynb   # the whole project: data, augmentation, models, training, results
+│   └── DIT5411_Colab_executed.ipynb   # the same notebook with the outputs of the Colab run
 └── results/                  # figures, metrics and logs from the Colab run
 ```
 
