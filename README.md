@@ -98,17 +98,52 @@ Full layer tables: [`results/mlp_summary.txt`](results/mlp_summary.txt), [`resul
 ## 5. Results
 
 <!-- RESULTS_START -->
-> **Results pending.** This section will be filled from the real Google Colab (T4 GPU) run: `results/summary.md` and `results/metrics_*.json`. No numbers are shown until then.
+All numbers come from one Google Colab run on a Tesla T4 GPU, with all 13,065 classes, 3,135,600 training images and 162,550 test images ([`results/summary.md`](results/summary.md), [`results/metrics_*.json`](results/)).
 
-| Model | Parameters | Epochs run (best) | Training time | Test top-1 | Test top-5 |
+| Model | Parameters | Epochs run (best) | Training time (T4) | Test top-1 | Test top-5 |
 |---|---:|---:|---:|---:|---:|
-| `mlp` | 7,489,801 | pending | pending | pending | pending |
-| `cnn_simple` | 7,844,105 | pending | pending | pending | pending |
-| `cnn_vgg` | 7,058,665 | pending | pending | pending | pending |
+| `mlp` | 7,489,801 | 3 (3) | 3.3 min | 58.47% | 82.48% |
+| `cnn_simple` | 7,844,105 | 4 (4) | 11.6 min | 85.56% | 97.58% |
+| **`cnn_vgg`** | **7,058,665** | **5 (5)** | **30.8 min** | **96.65%** | **99.73%** |
 
-The figures `results/accuracy_curves.png`, `results/model_comparison.png` and `results/misclassified_<model>.png` will be added from the same run.
+**Best model: `cnn_vgg`**, with **96.65% top-1** and **99.73% top-5** accuracy on the 162,550 test images (test loss 0.130).
 
-**Note:** the test set was used as the validation data during training (the brief picks the best model by its test accuracy). The reported test accuracy is therefore the accuracy of the best epoch on that same test set.
+Test top-1 accuracy after each epoch (from [`results/logs/`](results/logs/)):
+
+| Model | Epoch 1 | Epoch 2 | Epoch 3 | Epoch 4 | Epoch 5 |
+|---|---:|---:|---:|---:|---:|
+| `mlp` | 42.22% | 54.05% | 58.47% | | |
+| `cnn_simple` | 64.53% | 78.43% | 82.80% | 85.56% | |
+| `cnn_vgg` | 91.06% | 93.45% | 95.16% | 96.17% | 96.65% |
+
+![Accuracy and loss curves](results/accuracy_curves.png)
+
+![Test accuracy comparison](results/model_comparison.png)
+
+Misclassified test images of the best model (from a random sample of 2,048 test images; title = true → predicted):
+
+![Misclassified by cnn_vgg](results/misclassified_cnn_vgg.png)
+
+More examples: [`misclassified_mlp.png`](results/misclassified_mlp.png), [`misclassified_cnn_simple.png`](results/misclassified_cnn_simple.png).
+
+**Note:** the test set was used as the validation data during training (the brief picks the best model by its test accuracy). The reported test accuracy is therefore the accuracy of the best epoch on that same test set. In this run the best epoch was always the last epoch, so choosing the best epoch did not change which weights were evaluated.
+
+### Discussion
+
+* **Best model.** `cnn_vgg` is clearly the best on both measures: 96.65% top-1 and 99.73% top-5. Random guessing among 13,065 classes would score about 0.008%.
+* **Top-1 vs top-5.** For the weaker models top-5 is much higher than top-1 (`mlp` 58.5% → 82.5%, `cnn_simple` 85.6% → 97.6%). When they are wrong, the correct character is usually among their next few guesses, so most mistakes are between similar-looking characters. `cnn_vgg` misses the top 5 for only 0.27% of the test images. Its misclassified examples are mostly characters that differ in one small part or stroke, for example 戚 → 威 and 孑 → 子.
+* **MLP vs CNN.** The three models have a similar number of parameters (7.1 to 7.8 million, of which 6.7 million are in the shared output layer), but the CNNs are far more accurate. The MLP sees 1,024 independent pixels, so the same stroke moved by a pixel or two is a new input. Convolution reuses the same 3×3 filters at every position, and pooling tolerates small shifts. This matches the variation in handwriting and in the augmented images (rotation, shear, scaling, translation).
+* **Depth and BatchNorm.** `cnn_vgg` has the fewest parameters but is 11 points better than `cnn_simple`. It has six convolution layers instead of three, BatchNormalization after each, and global average pooling instead of a 1-million-parameter Flatten → Dense layer. BatchNorm makes the deep network train quickly: after its first epoch `cnn_vgg` already reached 91.1% test accuracy, more than `cnn_simple` after four epochs (85.6%). (`cnn_vgg` also trained one more epoch, but it was ahead from the first epoch.)
+* **Overfitting (L5).**
+  * `mlp`: training accuracy passes test accuracy in epoch 2, and the gap grows in epoch 3 (67.4% train vs 58.5% test; loss 1.32 vs 1.92). This is the start of overfitting: it memorises pixel patterns that do not generalise.
+  * `cnn_simple`: training accuracy (38.3%) stays far below test accuracy (85.6%). This is not overfitting. Training accuracy is measured on the harder augmented images with Dropout(0.5) switched on, and averaged over an epoch in which the model is still improving. At test time dropout is off and the test images are not augmented. The model is still underfitting.
+  * `cnn_vgg`: the training and test curves almost overlap (96.6% vs 96.7% in the last epoch), so there is no sign of overfitting.
+  * `EarlyStopping` never stopped a model. Every model's best epoch was its last one, so all three were still improving when their epochs ran out.
+* **Limits.**
+  * 32×32 images blur thin strokes and merge small components, which causes many of the remaining look-alike errors.
+  * Few epochs (3 / 4 / 5) were used because of the free Colab GPU quota (the quota was used up right after this run). Since no model had stopped improving, more epochs would probably raise all three accuracies, especially for `mlp` and `cnn_simple`.
+  * The test set doubles as the validation set, so there is no fully independent test number. A separate validation split taken from the 40 training samples would fix this.
+  * The 43 characters with 40 or fewer samples have no test images, so their accuracy is not measured.
 <!-- RESULTS_END -->
 
 ## 6. Design choices

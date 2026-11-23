@@ -1,0 +1,15 @@
+{
+  "model": "cnn_vgg",
+  "params": 7058665,
+  "epochs_run": 5,
+  "best_epoch": 5,
+  "train_seconds": 1845,
+  "img_size": 32,
+  "train_images": 3135600,
+  "test_images": 162550,
+  "test_loss": 0.1299,
+  "test_top1": 0.9665,
+  "test_top5": 0.9973,
+  "gpu": "Tesla T4",
+  "subset_classes": 0
+}

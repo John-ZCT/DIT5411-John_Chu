@@ -1,0 +1,14 @@
+{
+  "png_files_in_zip": 684677,
+  "characters": 13065,
+  "min_samples_per_char": 16,
+  "max_samples_per_char": 61,
+  "chars_with_40_or_fewer_samples_no_test": 43,
+  "train_images_all_chars": 522127,
+  "test_images_all_chars": 162550,
+  "img_size": 32,
+  "subset_classes": 0,
+  "prepared_classes": 13065,
+  "train_images": 522127,
+  "test_images": 162550
+}

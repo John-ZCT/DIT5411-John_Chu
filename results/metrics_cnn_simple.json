@@ -1,0 +1,15 @@
+{
+  "model": "cnn_simple",
+  "params": 7844105,
+  "epochs_run": 4,
+  "best_epoch": 4,
+  "train_seconds": 696,
+  "img_size": 32,
+  "train_images": 3135600,
+  "test_images": 162550,
+  "test_loss": 0.5946,
+  "test_top1": 0.8556,
+  "test_top5": 0.9758,
+  "gpu": "Tesla T4",
+  "subset_classes": 0
+}
